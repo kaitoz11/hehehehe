@@ -1,9 +1,9 @@
 version: 3
 
 vars:
-  FOLDER: try
-  SOLUTION_NAME: PE_PRN231_FA24_TrialTest_LuuTuanCuong
-  BE_PRJ_NAME: PE_PRN231_FA24_TrialTest_LuuTuanCuong_BE
+  FOLDER: PE_PRN231_FA24_TrialTest_PhamDucThinh_Submit
+  SOLUTION_NAME: PE_PRN231_FA24_TrialTest_PhamDucThinh
+  BE_PRJ_NAME: PE_PRN231_FA24_TrialTest_PhamDucThinh_BE
   DB: ViroCureFAL2024DB
 
 tasks:
@@ -12,10 +12,10 @@ tasks:
     dir: "{{.FOLDER}}"
     cmds:
       - dotnet new sln --name {{ .SOLUTION_NAME }}
-      - dotnet new webapi --name {{ .BE_PRJ_NAME }} -f net6.0
-      - dotnet new classlib --name BusinessObjects -f net6.0
-      - dotnet new classlib --name DataAccess -f net6.0
-      - dotnet new classlib --name Repositories -f net6.0
+      - dotnet new webapi --name {{ .BE_PRJ_NAME }} -f net8.0
+      - dotnet new classlib --name BusinessObjects -f net8.0
+      - dotnet new classlib --name DataAccess -f net8.0
+      - dotnet new classlib --name Repositories -f net8.0
       - dotnet sln add ./{{.BE_PRJ_NAME}}/{{.BE_PRJ_NAME}}.csproj
       - dotnet sln add ./BusinessObjects/BusinessObjects.csproj
       - dotnet sln add ./DataAccess/DataAccess.csproj
@@ -23,16 +23,16 @@ tasks:
       - dotnet add ./{{.BE_PRJ_NAME}}/{{.BE_PRJ_NAME}}.csproj reference ./Repositories/Repositories.csproj
       - dotnet add ./Repositories/Repositories.csproj reference ./DataAccess/DataAccess.csproj
       - dotnet add ./DataAccess/DataAccess.csproj reference ./BusinessObjects/BusinessObjects.csproj
-      - dotnet add ./DataAccess/DataAccess.csproj package Microsoft.EntityFrameworkCore.SqlServer --version 6.0.27 
-      - dotnet add ./DataAccess/DataAccess.csproj package Microsoft.EntityFrameworkCore.Design --version 6.0.27 
-      - dotnet add ./DataAccess/DataAccess.csproj package Microsoft.EntityFrameworkCore.Tools --version 6.0.27 
-      - dotnet add ./DataAccess/DataAccess.csproj package Microsoft.Extensions.Configuration --version 6.0.0 
-      - dotnet add ./DataAccess/DataAccess.csproj package Microsoft.Extensions.Configuration.Json --version 6.0.0
-      # - xcopy /A ..\\template\\DAO .\\DataAccess\\
+      - dotnet add ./DataAccess/DataAccess.csproj package Microsoft.EntityFrameworkCore.SqlServer --version 8.0.2 
+      - dotnet add ./DataAccess/DataAccess.csproj package Microsoft.EntityFrameworkCore.Design --version 8.0.2 
+      - dotnet add ./DataAccess/DataAccess.csproj package Microsoft.EntityFrameworkCore.Tools --version 8.0.2 
+      - dotnet add ./DataAccess/DataAccess.csproj package Microsoft.Extensions.Configuration --version 8.0.0 
+      - dotnet add ./DataAccess/DataAccess.csproj package Microsoft.Extensions.Configuration.Json --version 8.0.0
+      - xcopy /A ..\\template\\DAO .\\DataAccess\\
       - xcopy /E ..\\template\\api .\\{{.BE_PRJ_NAME}}\\
-      # - xcopy /E ..\\template\\Repo .\\Repositories\\
+      - xcopy /E ..\\template\\Repo .\\Repositories\\
 
   db:
     desc: scaffolding db
     dir: "{{.FOLDER}}/DataAccess"
-    cmd: dotnet ef dbcontext scaffold "Server=(local); Database={{.DB}}; Uid=sa; Pwd=12345" Microsoft.EntityFrameworkCore.SqlServer --output-dir ../BusinessObjects --context-dir .
+    cmd: dotnet ef dbcontext scaffold "Server=(local); Database={{.DB}}; Uid=sa; Pwd=12345;TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer --output-dir ../BusinessObjects --context-dir .
