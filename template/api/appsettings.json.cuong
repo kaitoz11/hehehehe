@@ -1,6 +1,11 @@
 ----
 "ConnectionStrings": {
   "DefaultConnectionString": "Server=(local); Database=Euro2024DB; Uid=sa; Pwd=12345;TrustServerCertificate=True"
-}
-
+},
+"JWT": {
+    "SecretKey": "MTIzNDU2Nzg5MGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6",
+    "Issuer": "https://random-issuer.example.com",
+    "Audience": "https://random-audience.example-app.com",
+    "ExpiryMinutes": 60
+  }
 ---
