@@ -1,0 +1,6 @@
+----
+"ConnectionStrings": {
+  "DefaultConnectionString": "Server=(local); Database=Euro2024DB; Uid=sa; Pwd=12345;TrustServerCertificate=True"
+}
+
+---
