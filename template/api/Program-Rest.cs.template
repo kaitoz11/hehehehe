@@ -1,0 +1,53 @@
+using System.Text;
+using API.Middlewares;
+using API.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Repository;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddScopes();
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<ExceptionHandlerMiddleware>();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option =>
+{
+  option.RequireHttpsMetadata = false;
+  option.TokenValidationParameters = new TokenValidationParameters
+  {
+    ValidateIssuer = true,
+    ValidateAudience = true,
+    ValidAudience = builder.Configuration["JWT:Audience"],
+    ValidIssuer = builder.Configuration["JWT:Issuer"],
+    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"] ?? throw new ArgumentNullException("JWT:SecretKey"))),
+    RequireExpirationTime = true,
+    ValidateIssuerSigningKey = false
+  };
+});
+builder.Services.AddAuthorization();
+builder.Services.AddDbContext<ViroCureFal2024dbContext>();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+  app.UseSwagger();
+  app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseExceptionHandler();
+app.MapControllers();
+
+app.Run();

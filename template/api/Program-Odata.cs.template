@@ -1,0 +1,47 @@
+using Assignment02.Database;
+using Assignment02.Model.Entities;
+using Carter;
+using Microsoft.AspNetCore.OData;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OData.Edm;
+using Microsoft.OData.ModelBuilder;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddControllers();
+builder.Services.AddSwaggerGen(option => option.EnableAnnotations());
+builder.Services.AddMediatR(option => option.RegisterServicesFromAssembly(typeof(Program).Assembly));
+builder.Services.AddDbContext<IAppDbContext, AppDbContext>(
+    option => option.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
+builder.Services.AddCarter();
+var modelBuilder = new ODataConventionModelBuilder();
+modelBuilder.EntitySet<User>("Users");
+modelBuilder.EntitySet<Trip>("Trips");
+IEdmModel? edmModel = modelBuilder.GetEdmModel();
+builder.Services.AddControllers().AddOData(options => options
+    .AddRouteComponents("odata", edmModel)
+    .Select()
+    .Filter()
+    .Expand()
+    .SetMaxTop(100)
+    .Count()
+    .OrderBy()
+);
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+app.MapControllers();
+app.MapCarter();
+app.Run();
