@@ -1,0 +1,27 @@
+using Assignment02.Database;
+using Assignment02.Model.Entities;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.EntityFrameworkCore;
+
+namespace Assignment02.Controllers;
+
+public class TripsController(IAppDbContext context) : ODataController
+{
+    [EnableQuery]
+    [HttpGet("odata/Trips/{driverId:guid}")]
+    public IQueryable<Trip> Get([FromRoute] Guid driverId)
+    {
+        return context.Trips.AsNoTracking()
+        .Include(t => t.Driver)
+        .Where(t => t.DriverId.Equals(driverId)).AsQueryable();
+    }
+    [EnableQuery]
+    [HttpGet("odata/Trips")]
+    public IQueryable<Trip> GetTrips()
+    {
+        return context.Trips.AsNoTracking()
+        .Include(t => t.Driver).AsQueryable();
+    }
+}
